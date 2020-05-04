@@ -5,30 +5,34 @@ using System.Net.Mime;
 
 namespace uTag
 {
+    public interface ITag
+    {
+        byte[] ToBytes();
+    }
+
     /// <summary>
     /// 标签帧接口
     /// </summary>
-    public interface ITagFrame
+    public interface ITagFrame:ITag
     {
         string GetContent();
         void SetContent(string value);
+    }
+
+    public interface ITagHeader:ITag
+    {
+        string Version { get; set; }
+        string Length { get; set; }
     }
 
     /// <summary>
     /// 标签类，可派生出各个标准的标签
     /// </summary>
     /// <typeparam name="TFrame">标签帧</typeparam>
-    public abstract class Tag<TFrame> where TFrame:ITagFrame
+    public abstract class Tag<THeader, TFrame> : ITag
+        where THeader:ITagHeader
+        where TFrame : ITagFrame
     {
-        /// <summary>
-        /// 记录常用标签帧关键字，便于快速访问：
-        /// 0：标题
-        /// 1：艺术家
-        /// 2：专辑名
-        /// 3：年代
-        /// 4：文件格式
-        /// </summary>
-        private string[] commonKey;
 
         /// <summary>
         /// 如果想要单独得到标签帧，可使用索引器搜索标签帧关键字得到
@@ -37,69 +41,48 @@ namespace uTag
         /// <returns>字符串内容，若不能转换为字符串则报错TagNotStringException</returns>
         public string this[string tagKey]
         {
-            get => TagFramesDictionary[tagKey].GetContent();
-            set => TagFramesDictionary[tagKey].SetContent(value);
+            get => TagFramesDict[tagKey].GetContent();
+            set => TagFramesDict[tagKey].SetContent(value);
         }
+
+        public THeader TagHeader { get; set; }
 
         /// <summary>
         /// 标签帧集合
         /// </summary>
-        public Dictionary<string, TFrame> TagFramesDictionary { get; set; }
+        public Dictionary<string, TFrame> TagFramesDict { get; set; }
 
         /// <summary>
         /// 标题的快速访问方式
         /// </summary>
-        public string Title {
-            get => this[commonKey[0]];
-            set => this[commonKey[0]] = value;
-        }
+        public abstract string Title { get; set; }
 
         /// <summary>
         /// 艺术家的快速访问方式
         /// </summary>
-        public string Artist
-        {
-            get => this[commonKey[1]];
-            set => this[commonKey[1]] = value;
-        }
+        public abstract string Artist { get; set; }
 
         /// <summary>
         /// 专辑名称的快速访问方式
         /// </summary>
-        public string Album
-        {
-            get => this[commonKey[2]];
-            set => this[commonKey[2]] = value;
-        }
+        public abstract string Album { get; set; }
 
         /// <summary>
         /// 年代的快速访问方式
         /// </summary>
-        public string Year
-        {
-            get => this[commonKey[3]];
-            set => this[commonKey[3]] = value;
-        }
+        public abstract string Year { get; set; }
 
         /// <summary>
         /// 文件格式的快速访问方式
         /// </summary>
-        public string Format
-        {
-            get => this[commonKey[4]];
-            set => this[commonKey[4]] = value;
-        }
+        public abstract string Format { get; set; }
 
         /// <summary>
-        /// 得到专辑封面图片
+        /// 获取/修改专辑图片
         /// </summary>
-        /// <returns></returns>
-        public abstract Bitmap GetPicture();
+        public abstract Bitmap Picture { get; set; }
 
-        /// <summary>
-        /// 设置专辑封面图片
-        /// </summary>
-        public abstract void SetPicture();
+        public abstract byte[] ToBytes();
     }
 
 }
