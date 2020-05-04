@@ -5,8 +5,15 @@ using System.Net.Mime;
 
 namespace uTag
 {
+    /// <summary>
+    /// 标签接口，是标签都得实现
+    /// </summary>
     public interface ITag
     {
+        /// <summary>
+        /// 将目前的内容以比特串方式返回
+        /// </summary>
+        /// <returns></returns>
         byte[] ToBytes();
     }
 
@@ -15,13 +22,32 @@ namespace uTag
     /// </summary>
     public interface ITagFrame:ITag
     {
+        /// <summary>
+        /// 以字符串的形式输出标签帧内容
+        /// </summary>
+        /// <returns></returns>
         string GetContent();
+
+        /// <summary>
+        /// 以字符串的形式写入标签帧内容
+        /// </summary>
+        /// <param name="value"></param>
         void SetContent(string value);
     }
 
+    /// <summary>
+    /// 标签头接口
+    /// </summary>
     public interface ITagHeader:ITag
     {
+        /// <summary>
+        /// 标签协议版本
+        /// </summary>
         string Version { get; set; }
+
+        /// <summary>
+        /// 标签总大小
+        /// </summary>
         string Length { get; set; }
     }
 
@@ -45,6 +71,9 @@ namespace uTag
             set => TagFramesDict[tagKey].SetContent(value);
         }
 
+        /// <summary>
+        /// 标签头信息
+        /// </summary>
         public THeader TagHeader { get; set; }
 
         /// <summary>
@@ -82,6 +111,10 @@ namespace uTag
         /// </summary>
         public abstract Bitmap Picture { get; set; }
 
+        /// <summary>
+        /// 将目前的内容以比特串方式返回
+        /// </summary>
+        /// <returns></returns>
         public abstract byte[] ToBytes();
     }
 
