@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
 
 namespace uTag.Util
@@ -38,6 +39,11 @@ namespace uTag.Util
 
     public class Id3V23Tag:Tag<Id3V23TagHeader,Id3V23TagFrame>
     {
+        public Id3V23Tag(FileInfo file)
+        {
+
+        }
+
         public override string Title { get; set; }
         public override string Artist { get; set; }
         public override string Album { get; set; }

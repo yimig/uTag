@@ -77,7 +77,7 @@ namespace uTag
         string Year { get; set; }
 
         /// <summary>
-        /// 文件格式的快速访问方式
+        /// 返回标签格式
         /// </summary>
         string Format { get; set; }
 
