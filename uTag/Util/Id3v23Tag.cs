@@ -174,7 +174,9 @@ namespace uTag.Util
             var encoding = new UnicodeEncoding(true, false);
             var encoding2 = new UTF8Encoding(true);
             var encoding3 = Encoding.GetEncoding("gb2312");
-            Content = encoding3.GetString(contentBytes);
+            var encoding4 = Encoding.ASCII;
+            var encoding5 = Encoding.Default;
+            Content = encoding5.GetString(contentBytes);
         }
 
         private void SetContent(string value)

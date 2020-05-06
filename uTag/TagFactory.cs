@@ -15,7 +15,17 @@ namespace uTag
         /// <returns></returns>
         public static ITag Load(FileInfo file)
         {
-            return new Id3V23Tag(file);
+            ITag resTag;
+            switch (file.Extension.ToLower())
+            {
+                case ".mp3": resTag = new Id3V23Tag(file);
+                    break;
+                case ".flac":resTag=new FlacTag(file);
+                    break;
+                default: throw new CannotDetectTagFormatException();
+            }
+
+            return resTag;
         }
 
         /// <summary>

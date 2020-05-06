@@ -24,6 +24,17 @@ namespace uTag
     }
 
     /// <summary>
+    /// 该格式无法自动识别或不受支持，请手动指定标签格式
+    /// </summary>
+    public class CannotDetectTagFormatException : TagException
+    {
+        public override string GetExplanation()
+        {
+            return "该格式无法自动识别或不受支持，请手动指定标签格式";
+        }
+    }
+
+    /// <summary>
     /// 分析文件错误，文件损坏或格式不支持
     /// </summary>
     public class TagAnalyseException : TagException
