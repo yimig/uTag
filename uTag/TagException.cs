@@ -33,4 +33,23 @@ namespace uTag
             return "分析文件错误，文件损坏或格式不支持";
         }
     }
+
+    /// <summary>
+    /// 写入标签时发生的错误
+    /// </summary>
+    public abstract class TagWriteException : TagException
+    {
+
+    }
+
+    /// <summary>
+    /// 无法写入标签信息：标签大小超过标准限制
+    /// </summary>
+    public class TagOverSizeException : TagWriteException
+    {
+        public override string GetExplanation()
+        {
+            return "无法写入标签信息：标签大小超过标准限制";
+        }
+    }
 }

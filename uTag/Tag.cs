@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Net.Mime;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 
 namespace uTag
 {
@@ -20,35 +23,33 @@ namespace uTag
     /// <summary>
     /// 标签帧接口
     /// </summary>
-    public interface ITagFrame:ITagSection
+    public interface ITagFrame : ITagSection
     {
         /// <summary>
         /// 以字符串的形式输出标签帧内容
         /// </summary>
-        /// <returns></returns>
-        string GetContent();
+        string Content { get; set; }
 
         /// <summary>
-        /// 以字符串的形式写入标签帧内容
+        /// 帧ID
         /// </summary>
-        /// <param name="value"></param>
-        void SetContent(string value);
+        string Id { get; set; }
     }
 
     /// <summary>
     /// 标签头接口
     /// </summary>
-    public interface ITagHeader:ITagSection
+    public interface ITagHeader : ITagSection
     {
         /// <summary>
         /// 标签协议版本
         /// </summary>
-        string Version { get; set; }
+        string Version { get; }
 
         /// <summary>
         /// 标签总大小
         /// </summary>
-        string Length { get; set; }
+        int Size { get; set; }
     }
 
     /// <summary>
@@ -79,7 +80,7 @@ namespace uTag
         /// <summary>
         /// 返回标签格式
         /// </summary>
-        string Format { get; set; }
+        string Format { get; }
 
         /// <summary>
         /// 获取/修改专辑图片
@@ -92,10 +93,11 @@ namespace uTag
     /// </summary>
     /// <typeparam name="THeader">标签头</typeparam>
     /// <typeparam name="TFrame">标签帧</typeparam>
-    public abstract class Tag<THeader, TFrame>:ITag
+    public abstract class Tag<THeader, TFrame> : ITag
         where THeader : ITagHeader
         where TFrame : ITagFrame
     {
+
         /// <summary>
         /// 如果想要单独得到标签帧，可使用索引器搜索标签帧关键字得到
         /// </summary>
@@ -103,8 +105,32 @@ namespace uTag
         /// <returns>字符串内容，若不能转换为字符串则报错TagNotStringException</returns>
         public string this[string tagKey]
         {
-            get => TagFramesDict[tagKey].GetContent();
-            set => TagFramesDict[tagKey].SetContent(value);
+            get => TagFramesDict[tagKey].Content;
+            set => TagFramesDict[tagKey].Content = value;
+        }
+
+        /// <summary>
+        /// 生产分割标签帧方法
+        /// </summary>
+        /// <param name="rawFramesBytes">原标签帧集合（不包含标签头）</param>
+        /// <returns>标签帧集合</returns>
+        public abstract List<TFrame> TagFramesFactory(byte[] rawFramesBytes);
+
+        /// <summary>
+        /// 初始化标签帧字典
+        /// </summary>
+        /// <param name="rawFramesBytes">原标签帧集合（不包含标签头）</param>
+        public void initFramesDict(byte[] rawFramesBytes)
+        {
+            var framesList = TagFramesFactory(rawFramesBytes);
+            foreach (var frame in framesList)
+            {
+                if (TagFramesDict.Keys.Contains(frame.Id))
+                {
+                    continue;
+                }
+                TagFramesDict.Add(frame.Id, frame);
+            }
         }
 
         /// <summary>
@@ -123,7 +149,7 @@ namespace uTag
         public abstract string Artist { get; set; }
         public abstract string Album { get; set; }
         public abstract string Year { get; set; }
-        public abstract string Format { get; set; }
+        public abstract string Format { get; }
         public abstract Bitmap Picture { get; set; }
     }
 
