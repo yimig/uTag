@@ -65,7 +65,9 @@ namespace uTag.Util
         public override string Artist { get; set; }
         public override string Album { get; set; }
         public override string Year { get; set; }
-        public override string Format { get; }
+
+        public override string Format => "Flac";
+
         public override Bitmap Picture { get; set; }
     }
 }

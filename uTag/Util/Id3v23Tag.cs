@@ -140,6 +140,15 @@ namespace uTag.Util
             GetContent();
         }
 
+        public Id3V23TagFrame(byte[] rawTagFrame,string id)
+        {
+            RawTagFrameBytes = rawTagFrame;
+            this.Id = id;
+            GetSize();
+            GetTagStatue();
+            GetContent();
+        }
+
         private byte[] RawTagFrameBytes { get; set; }
         public string Content { get; set; }
         public string Id { get; set; }
@@ -169,15 +178,20 @@ namespace uTag.Util
 
         private void GetContent()
         {
-            byte[] contentBytes = new byte[Size];
-            Buffer.BlockCopy(RawTagFrameBytes, 10, contentBytes, 0, Size);
-            var encoding = new UnicodeEncoding(true, false);
+            byte[] contentBytes = new byte[Size-3];
+            Buffer.BlockCopy(RawTagFrameBytes, 13, contentBytes, 0, Size-3);
+            var encoding = new UnicodeEncoding(false,false);
             var encoding2 = new UTF8Encoding(true);
             var encoding3 = Encoding.GetEncoding("gb2312");
             var encoding4 = Encoding.ASCII;
             var encoding5 = Encoding.Default;
-            Content = encoding5.GetString(contentBytes);
+            Content = encoding.GetString(contentBytes);
         }
+
+        // private byte[] ConvertContent(byte[] rowContentBytes)
+        // {
+        //     rowContentBytes[0]==00
+        // }
 
         private void SetContent(string value)
         {
@@ -293,8 +307,8 @@ namespace uTag.Util
                 {
                     byte[] rawFrameBytes = new byte[sizeCount];
                     Buffer.BlockCopy(rawFramesBytes, i, rawFrameBytes, 0, sizeCount);
-                    var frame = new Id3V23TagFrame(rawFrameBytes);
-                    if (frame.Id != "\0\0\0\0") frames.Add(new Id3V23TagFrame(rawFrameBytes));
+                    var frameID = GetFrameId(rawFrameBytes);
+                    if (frameID != "\0\0\0\0") frames.Add(new Id3V23TagFrame(rawFrameBytes,frameID));
                     i += sizeCount;
                 }
                 else
@@ -304,6 +318,13 @@ namespace uTag.Util
             }
 
             return frames;
+        }
+
+        private string GetFrameId(byte[] rawTagFrameBytes)
+        {
+            byte[] idBytes = new byte[4];
+            Buffer.BlockCopy(rawTagFrameBytes, 0, idBytes, 0, 4);
+            return Encoding.ASCII.GetString(idBytes);
         }
 
         public override byte[] ToBytes()

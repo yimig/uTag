@@ -19,7 +19,7 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var tag = TagFactory.Load(flac);
+            var tag = TagFactory.Load(cn);
             Console.WriteLine("class：" + tag.GetType().Name);
             Console.WriteLine("title：" + tag.Title);
             Console.WriteLine("artist：" + tag.Artist);
