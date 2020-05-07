@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using uTag;
 using uTag.Util;
+using System.Drawing;
 
 namespace Test
 {
@@ -19,13 +20,16 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var tag = TagFactory.Load(cn);
+            var tag = TagFactory.Load(qq);
             Console.WriteLine("class：" + tag.GetType().Name);
             Console.WriteLine("title：" + tag.Title);
             Console.WriteLine("artist：" + tag.Artist);
             Console.WriteLine("album：" + tag.Album);
             Console.WriteLine("year:" + tag.Year);
             Console.WriteLine("format：" + tag.Format);
+            MemoryStream ms=new MemoryStream(tag.Picture);
+            Image image=Image.FromStream(ms);
+            Console.WriteLine("Picture Area："+image.Height+"*"+image.Width);
             Console.ReadLine();
         }
     }

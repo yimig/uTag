@@ -46,6 +46,17 @@ namespace uTag
     }
 
     /// <summary>
+    /// 图片存在，但图片损坏或不为jpeg格式
+    /// </summary>
+    public class TagPictureBadException:TagException
+    {
+        public override string GetExplanation()
+        {
+            return " 图片存在，但图片损坏或不为jpeg格式";
+        }
+    }
+
+    /// <summary>
     /// 写入标签时发生的错误
     /// </summary>
     public abstract class TagWriteException : TagException

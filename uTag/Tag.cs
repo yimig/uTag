@@ -85,7 +85,7 @@ namespace uTag
         /// <summary>
         /// 获取/修改专辑图片
         /// </summary>
-        Bitmap Picture { get; set; }
+        byte[] Picture { get; set; }
     }
 
     /// <summary>
@@ -150,7 +150,7 @@ namespace uTag
         public abstract string Album { get; set; }
         public abstract string Year { get; set; }
         public abstract string Format { get; }
-        public abstract Bitmap Picture { get; set; }
+        public abstract byte[] Picture { get; set; }
     }
 
 }

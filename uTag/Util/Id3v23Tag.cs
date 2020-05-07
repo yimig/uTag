@@ -188,10 +188,29 @@ namespace uTag.Util
             Content = encoding.GetString(contentBytes);
         }
 
-        // private byte[] ConvertContent(byte[] rowContentBytes)
-        // {
-        //     rowContentBytes[0]==00
-        // }
+        /// <summary>
+        /// 得到图片，只有该标签包含图片时才允许使用该方法
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetImage()
+        {
+            byte[] imageFormatBytes = new byte[10];
+            Buffer.BlockCopy(RawTagFrameBytes, 11, imageFormatBytes, 0, 10);
+            string imageFormat = Encoding.ASCII.GetString(imageFormatBytes);
+            if (imageFormat == "image/jpeg")
+            {
+                //这里网易云音乐的image/jpeg标签后与图片前由三位的数据，但qq音乐是四位，怀疑两个00之间夹有图片信息未能正确解析，下次跳过这个段的内容。
+                byte[] imageBytes = new byte[RawTagFrameBytes.Length-25];
+                Buffer.BlockCopy(RawTagFrameBytes, 25, imageBytes, 0, RawTagFrameBytes.Length - 25);
+                // MemoryStream ms = new MemoryStream(imageBytes);
+                // return Image.FromStream(ms);
+                return imageBytes;
+            }
+            else
+            {
+                throw new TagPictureBadException();
+            }
+        }
 
         private void SetContent(string value)
         {
@@ -293,7 +312,14 @@ namespace uTag.Util
             }
         }
 
-        public override Bitmap Picture { get; set; }
+        public override byte[] Picture
+        {
+            get => ((Id3V23TagFrame) TagFramesDict["APIC"]).GetImage();
+            set
+            {
+
+            }
+        }
 
         public override List<Id3V23TagFrame> TagFramesFactory(byte[] rawFramesBytes)
         {
@@ -309,6 +335,10 @@ namespace uTag.Util
                     Buffer.BlockCopy(rawFramesBytes, i, rawFrameBytes, 0, sizeCount);
                     var frameID = GetFrameId(rawFrameBytes);
                     if (frameID != "\0\0\0\0") frames.Add(new Id3V23TagFrame(rawFrameBytes,frameID));
+                    else
+                    {
+                        break;
+                    }
                     i += sizeCount;
                 }
                 else

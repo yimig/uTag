@@ -68,6 +68,6 @@ namespace uTag.Util
 
         public override string Format => "Flac";
 
-        public override Bitmap Picture { get; set; }
+        public override byte[] Picture { get; set; }
     }
 }
