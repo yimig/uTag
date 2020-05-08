@@ -178,15 +178,32 @@ namespace uTag.Util
 
         private void GetContent()
         {
-            byte[] contentBytes = new byte[Size-3];
-            Buffer.BlockCopy(RawFrameBytes, 13, contentBytes, 0, Size-3);
-            var encoding = new UnicodeEncoding(false,false);
+            if (Id == "TYER") Content = ASCIIStringConvert(RawFrameBytes);
+            else
+            {
+                Content = UnicodeStringConvert(RawFrameBytes);
+            }
+        }
+
+        private string UnicodeStringConvert(byte[] rawStringBytes)
+        {
+            byte[] contentBytes = new byte[Size - 3];
+            Buffer.BlockCopy(rawStringBytes, 13, contentBytes, 0, Size - 3);
+            var encoding = new UnicodeEncoding(false, false);
             string strContent = encoding.GetString(contentBytes);
-            if (strContent.Length!=0&&strContent[strContent.Length - 1] == '\0')
+            if (strContent.Length != 0 && strContent[strContent.Length - 1] == '\0')
             {
                 strContent = strContent.Remove(strContent.Length - 1);
             }
-            Content = strContent;
+            return strContent;
+        }
+
+        private string ASCIIStringConvert(byte[] rawStringBytes)
+        {
+            byte[] contentBytes = new byte[Size];
+            Buffer.BlockCopy(rawStringBytes, 10, contentBytes, 0, Size);
+            var encoding = new ASCIIEncoding();
+            return encoding.GetString(contentBytes);
         }
 
         /// <summary>
