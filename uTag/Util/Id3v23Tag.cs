@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace uTag.Util
 {
@@ -38,16 +39,16 @@ namespace uTag.Util
             Break
         }
 
-        public Id3V23TagHeader(byte[] rawTagHeader)
+        public Id3V23TagHeader(byte[] rawHeaderBytes)
         {
-            RawTagHeader = rawTagHeader;
+            RawHeaderBytes = rawHeaderBytes;
             RefreshHeaderInfo();
             SetSize(Size);
         }
 
         private string version;
         private string identifier;
-        public byte[] RawTagHeader { get; set; }
+        private byte[] RawHeaderBytes { get; set; }
         public int Size { get; set; }
         public FlagType Flags { get; set; }
 
@@ -65,20 +66,20 @@ namespace uTag.Util
         private void GetIdentifier()
         {
             byte[] identifierBytes = new byte[3];
-            Buffer.BlockCopy(RawTagHeader, 0, identifierBytes, 0, 3);
+            Buffer.BlockCopy(RawHeaderBytes, 0, identifierBytes, 0, 3);
             identifier = Encoding.ASCII.GetString(identifierBytes);
         }
 
         private void GetVersion()
         {
             byte[] versionBytes = new byte[2];
-            Buffer.BlockCopy(RawTagHeader, 3, versionBytes, 0, 2);
+            Buffer.BlockCopy(RawHeaderBytes, 3, versionBytes, 0, 2);
             version = BitConverter.ToString(versionBytes, 0).Replace("-", string.Empty).ToLower();
         }
 
         private void GetFlags()
         {
-            switch (RawTagHeader[5])
+            switch (RawHeaderBytes[5])
             {
                 case 128:
                     Flags = FlagType.Unsynchronisation;
@@ -101,7 +102,7 @@ namespace uTag.Util
         private void GetSize()
         {
             byte[] sizeBytes = new byte[4];
-            Buffer.BlockCopy(RawTagHeader, 6, sizeBytes, 0, 4);
+            Buffer.BlockCopy(RawHeaderBytes, 6, sizeBytes, 0, 4);
             Size = sizeBytes[0] << 21 | sizeBytes[1] << 14 | sizeBytes[2] << 7 | sizeBytes[3];
 
         }
@@ -128,12 +129,11 @@ namespace uTag.Util
         }
     }
 
-
     public class Id3V23TagFrame : ITagFrame
     {
         public Id3V23TagFrame(byte[] rawTagFrame)
         {
-            RawTagFrameBytes = rawTagFrame;
+            RawFrameBytes = rawTagFrame;
             GetId();
             GetSize();
             GetTagStatue();
@@ -142,14 +142,14 @@ namespace uTag.Util
 
         public Id3V23TagFrame(byte[] rawTagFrame,string id)
         {
-            RawTagFrameBytes = rawTagFrame;
+            RawFrameBytes = rawTagFrame;
             this.Id = id;
             GetSize();
             GetTagStatue();
             GetContent();
         }
 
-        private byte[] RawTagFrameBytes { get; set; }
+        private byte[] RawFrameBytes { get; set; }
         public string Content { get; set; }
         public string Id { get; set; }
         public bool isReadOnly { get; set; }
@@ -158,34 +158,35 @@ namespace uTag.Util
         private void GetId()
         {
             byte[] idBytes = new byte[4];
-            Buffer.BlockCopy(RawTagFrameBytes, 0, idBytes, 0, 4);
+            Buffer.BlockCopy(RawFrameBytes, 0, idBytes, 0, 4);
             Id = Encoding.ASCII.GetString(idBytes);
         }
 
         private void GetTagStatue()
         {
             byte[] statueBytes = new byte[2];
-            Buffer.BlockCopy(RawTagFrameBytes, 8, statueBytes, 0, 2);
+            Buffer.BlockCopy(RawFrameBytes, 8, statueBytes, 0, 2);
             isReadOnly = (statueBytes[0] & 32) == 32 ? true : false;
         }
 
         private void GetSize()
         {
             byte[] sizeBytes = new byte[4];
-            Buffer.BlockCopy(RawTagFrameBytes, 4, sizeBytes, 0, 4);
+            Buffer.BlockCopy(RawFrameBytes, 4, sizeBytes, 0, 4);
             Size = BitConverter.ToInt32(sizeBytes.Reverse().ToArray(), 0);
         }
 
         private void GetContent()
         {
             byte[] contentBytes = new byte[Size-3];
-            Buffer.BlockCopy(RawTagFrameBytes, 13, contentBytes, 0, Size-3);
+            Buffer.BlockCopy(RawFrameBytes, 13, contentBytes, 0, Size-3);
             var encoding = new UnicodeEncoding(false,false);
-            var encoding2 = new UTF8Encoding(true);
-            var encoding3 = Encoding.GetEncoding("gb2312");
-            var encoding4 = Encoding.ASCII;
-            var encoding5 = Encoding.Default;
-            Content = encoding.GetString(contentBytes);
+            string strContent = encoding.GetString(contentBytes);
+            if (strContent.Length!=0&&strContent[strContent.Length - 1] == '\0')
+            {
+                strContent = strContent.Remove(strContent.Length - 1);
+            }
+            Content = strContent;
         }
 
         /// <summary>
@@ -195,15 +196,25 @@ namespace uTag.Util
         public byte[] GetImage()
         {
             byte[] imageFormatBytes = new byte[10];
-            Buffer.BlockCopy(RawTagFrameBytes, 11, imageFormatBytes, 0, 10);
+            Buffer.BlockCopy(RawFrameBytes, 11, imageFormatBytes, 0, 10);
             string imageFormat = Encoding.ASCII.GetString(imageFormatBytes);
             if (imageFormat == "image/jpeg")
             {
-                //这里网易云音乐的image/jpeg标签后与图片前由三位的数据，但qq音乐是四位，怀疑两个00之间夹有图片信息未能正确解析，下次跳过这个段的内容。
-                byte[] imageBytes = new byte[RawTagFrameBytes.Length-25];
-                Buffer.BlockCopy(RawTagFrameBytes, 25, imageBytes, 0, RawTagFrameBytes.Length - 25);
-                // MemoryStream ms = new MemoryStream(imageBytes);
-                // return Image.FromStream(ms);
+                byte[] imageTempBytes = new byte[RawFrameBytes.Length-21];
+                Buffer.BlockCopy(RawFrameBytes, 21, imageTempBytes, 0, RawFrameBytes.Length - 21);
+                byte[] imageBytes;
+                if (imageTempBytes[0] == 0)
+                {
+                    int count = 1;
+                    for (; imageTempBytes[count] != 0; count++) ;
+                    count++;
+                    imageBytes=new byte[imageTempBytes.Length-count];
+                    Buffer.BlockCopy(imageTempBytes,count,imageBytes,0,imageTempBytes.Length-count);
+                }
+                else
+                {
+                    imageBytes = imageTempBytes;
+                }
                 return imageBytes;
             }
             else
@@ -245,8 +256,7 @@ namespace uTag.Util
                 if (TagFramesDict.Keys.Contains("TIT1")) return this["TIT1"];
                 else
                 {
-                    if (TagFramesDict.Keys.Contains("TIT2")) return this["TIT2"];
-                    else return "";
+                    return this["TIT2"];
                 }
             }
             set
@@ -262,8 +272,7 @@ namespace uTag.Util
                 if (TagFramesDict.Keys.Contains("TPE1")) return this["TPE1"];
                 else
                 {
-                    if (TagFramesDict.Keys.Contains("TPE2")) return this["TPE2"];
-                    else return "";
+                    return this["TPE2"];
                 }
             }
             set
@@ -274,14 +283,7 @@ namespace uTag.Util
 
         public override string Album
         {
-            get
-            {
-                if (TagFramesDict.Keys.Contains("TALB")) return this["TALB"];
-                else
-                {
-                    return "";
-                }
-            }
+            get => this["TALB"];
             set
             {
 
@@ -290,14 +292,7 @@ namespace uTag.Util
 
         public override string Year
         {
-            get
-            {
-                if (TagFramesDict.Keys.Contains("TYER")) return this["TYER"];
-                else
-                {
-                    return "";
-                }
-            }
+            get => this["TYER"];
             set
             {
 
@@ -315,6 +310,24 @@ namespace uTag.Util
         public override byte[] Picture
         {
             get => ((Id3V23TagFrame) TagFramesDict["APIC"]).GetImage();
+            set
+            {
+
+            }
+        }
+
+        public override string TrackNumber
+        {
+            get => this["TRCK"];
+            set
+            {
+
+            }
+        }
+
+        public override string Genre
+        {
+            get => this["TCON"];
             set
             {
 

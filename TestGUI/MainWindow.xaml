@@ -1,0 +1,46 @@
+﻿<Window x:Class="TestGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestGUI"
+        mc:Ignorable="d"
+        Title="TagTestGUI" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <StackPanel Orientation="Horizontal">
+                <Label>标题：</Label>
+                <Label Name="lbTitle"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>歌手：</Label>
+                <Label Name="lbArtist"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>专辑：</Label>
+                <Label Name="lbAlbum"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>发行年份：</Label>
+                <Label Name="lbYEAR"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>标签格式：</Label>
+                <Label Name="lbTagFormat"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>音轨编号：</Label>
+                <Label Name="lbTrack"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>流派：</Label>
+                <Label Name="lbGenre"></Label>
+            </StackPanel>
+        </StackPanel>
+        <Image Grid.Column="1" Name="imageBox"></Image>
+    </Grid>
+</Window>

@@ -20,13 +20,15 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var tag = TagFactory.Load(qq);
+            var tag = TagFactory.Load(en);
             Console.WriteLine("class：" + tag.GetType().Name);
             Console.WriteLine("title：" + tag.Title);
             Console.WriteLine("artist：" + tag.Artist);
             Console.WriteLine("album：" + tag.Album);
             Console.WriteLine("year:" + tag.Year);
             Console.WriteLine("format：" + tag.Format);
+            Console.WriteLine("TrackID："+tag.TrackNumber);
+            Console.WriteLine("Genre："+tag.Genre);
             MemoryStream ms=new MemoryStream(tag.Picture);
             Image image=Image.FromStream(ms);
             Console.WriteLine("Picture Area："+image.Height+"*"+image.Width);

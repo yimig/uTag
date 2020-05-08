@@ -21,6 +21,7 @@ namespace uTag.Util
         private byte[] RawHeaderTag { get; set; }
         public string Version { get; }
         public int Size { get; set; }
+        private byte[] RawHeaderBytes { get; set; }
     }
 
     public class FlacTagFrame : ITagFrame
@@ -38,6 +39,7 @@ namespace uTag.Util
         private byte[] RawFrameTag { get; set; }
         public string Content { get; set; }
         public string Id { get; set; }
+        private byte[] RawFrameBytes { get; set; }
     }
 
     public class FlacTag:Tag<FlacTagHeader,FlacTagFrame>
@@ -65,9 +67,9 @@ namespace uTag.Util
         public override string Artist { get; set; }
         public override string Album { get; set; }
         public override string Year { get; set; }
-
         public override string Format => "Flac";
-
         public override byte[] Picture { get; set; }
+        public override string TrackNumber { get; set; }
+        public override string Genre { get; set; }
     }
 }

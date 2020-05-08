@@ -86,6 +86,13 @@ namespace uTag
         /// 获取/修改专辑图片
         /// </summary>
         byte[] Picture { get; set; }
+
+        /// <summary>
+        /// 音轨编号的快速访问方式
+        /// </summary>
+        string TrackNumber { get; set; }
+
+        string Genre { get; set; }
     }
 
     /// <summary>
@@ -105,7 +112,15 @@ namespace uTag
         /// <returns>字符串内容，若不能转换为字符串则报错TagNotStringException</returns>
         public string this[string tagKey]
         {
-            get => TagFramesDict[tagKey].Content;
+            get
+            {
+                if(TagFramesDict.Keys.Contains(tagKey))
+                    return TagFramesDict[tagKey].Content;
+                else
+                {
+                    return String.Empty;
+                }
+            }
             set => TagFramesDict[tagKey].Content = value;
         }
 
@@ -151,6 +166,8 @@ namespace uTag
         public abstract string Year { get; set; }
         public abstract string Format { get; }
         public abstract byte[] Picture { get; set; }
+        public abstract string TrackNumber { get; set; }
+        public abstract string Genre { get; set; }
     }
 
 }
