@@ -149,6 +149,11 @@ namespace uTag
         }
 
         /// <summary>
+        /// 保存目前的标签，修改标签属性后只有调用此方法才会被保存
+        /// </summary>
+        public abstract void Save();
+
+        /// <summary>
         /// 标签头信息
         /// </summary>
         public THeader TagHeader { get; set; }

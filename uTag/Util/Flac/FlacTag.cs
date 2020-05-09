@@ -4,44 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
-namespace uTag.Util
+namespace uTag.Util.Flac
 {
-    public class FlacTagHeader : ITagHeader
-    {
-        public FlacTagHeader(byte[] rawTagHeader)
-        {
-            RawHeaderTag = rawTagHeader;
-        }
-
-        public byte[] ToBytes()
-        {
-            throw new NotImplementedException();
-        }
-
-        private byte[] RawHeaderTag { get; set; }
-        public string Version { get; }
-        public int Size { get; set; }
-        private byte[] RawHeaderBytes { get; set; }
-    }
-
-    public class FlacTagFrame : ITagFrame
-    {
-        public FlacTagFrame(byte[] rawFrameTag)
-        {
-            RawFrameTag = rawFrameTag;
-        }
-
-        public byte[] ToBytes()
-        {
-            throw new NotImplementedException();
-        }
-
-        private byte[] RawFrameTag { get; set; }
-        public string Content { get; set; }
-        public string Id { get; set; }
-        private byte[] RawFrameBytes { get; set; }
-    }
-
     public class FlacTag:Tag<FlacTagHeader,FlacTagFrame>
     {
         public FlacTag(FileInfo file)
@@ -54,6 +18,11 @@ namespace uTag.Util
         }
 
         public override List<FlacTagFrame> TagFramesFactory(byte[] rawFramesBytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Save()
         {
             throw new NotImplementedException();
         }

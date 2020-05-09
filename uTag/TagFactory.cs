@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using uTag.Util;
+using uTag.Util.Flac;
+using uTag.Util.Id3v23;
 
 namespace uTag
 {
