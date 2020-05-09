@@ -12,7 +12,7 @@ namespace uTag.Util.Flac
         {
             TagFramesDict = new Dictionary<string,FlacTagFrame>();
             BinaryReader br = new BinaryReader(new FileStream(file.FullName, FileMode.Open));
-            var rawTagHeader = br.ReadBytes(10);
+            var rawTagHeader = br.ReadBytes(42);
             TagHeader = new FlacTagHeader(rawTagHeader);
             initFramesDict(br.ReadBytes(TagHeader.Size));
         }

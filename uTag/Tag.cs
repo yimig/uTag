@@ -92,7 +92,15 @@ namespace uTag
         /// </summary>
         string TrackNumber { get; set; }
 
+        /// <summary>
+        /// 音乐流派的快速访问方式
+        /// </summary>
         string Genre { get; set; }
+
+        /// <summary>
+        /// 保存目前的标签，修改标签属性后只有调用此方法才会被保存
+        /// </summary>
+        void Save();
     }
 
     /// <summary>
