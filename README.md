@@ -46,7 +46,7 @@ Console.WriteLine("title：" + tag.Title);
 - Artist 表演者名称
 - Album 专辑名称
 - Year 发行日期
-- Format **标签**的的格式
+- Format **标签**的格式
 - TrackID 音轨编号
 - Genre 流派
 
