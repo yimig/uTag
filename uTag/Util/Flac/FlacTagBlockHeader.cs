@@ -4,22 +4,22 @@ using System.Text;
 
 namespace uTag.Util.Flac
 {
-    public class FlacTagFrameHeader:ITagSection
+    public class FlacTagBlockHeader:ITagSection
     {
-        public FlacTagFrameHeader(byte[] rawFlacTagFrameHeader)
+        public FlacTagBlockHeader(byte[] rawFlacTagFrameHeader)
         {
             RawFlacTagFrameHeaderBytes = rawFlacTagFrameHeader;
             CheckIsLastMetaData();
-            GetType();
+            GetBlockType();
             GetFrameSize();
         }
 
         private void CheckIsLastMetaData()
         {
-            IsLastMetaData = RawFlacTagFrameHeaderBytes[0]>>7 == '0';
+            IsLastMetaData = (RawFlacTagFrameHeaderBytes[0]&128) == 128;
         }
 
-        private void GetType()
+        private void GetBlockType()
         {
             switch (RawFlacTagFrameHeaderBytes[0]&127)
             {

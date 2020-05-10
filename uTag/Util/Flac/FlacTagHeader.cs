@@ -19,7 +19,7 @@ namespace uTag.Util.Flac
         private void InitProperty()
         {
             BuildFrameHeader();
-            Size = FrameHeader.BlockSize;
+            Size = BlockHeader.BlockSize;
             GetMinBlockSize();
             GetMaxBlockSize();
             GetMinFrameSize();
@@ -35,7 +35,7 @@ namespace uTag.Util.Flac
         {
             byte[] tempBytes=new byte[4];
             Buffer.BlockCopy(RawHeaderBytes,0,tempBytes,0,4);
-            FrameHeader=new FlacTagFrameHeader(tempBytes);
+            BlockHeader=new FlacTagBlockHeader(tempBytes);
         }
 
         private void GetMinBlockSize()
@@ -91,7 +91,7 @@ namespace uTag.Util.Flac
             throw new NotImplementedException();
         }
 
-        public FlacTagFrameHeader FrameHeader { get; set; }
+        public FlacTagBlockHeader BlockHeader { get; set; }
         /// <summary>
         /// 最小块信息
         /// </summary>

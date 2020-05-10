@@ -29,7 +29,7 @@ namespace TestGUI
         public MainWindow()
         {
             InitializeComponent();
-            tag = TagFactory.Load(qq);
+            tag = TagFactory.Load(flac);
             InitControler();
         }
 

@@ -22,7 +22,7 @@ namespace Test
 
         static void Main(string[] args)
         {
-            var tag = TagFactory.Load(fen);
+            var tag = TagFactory.Load(fjp);
             Console.WriteLine("class：" + tag.GetType().Name);
             Console.WriteLine("title：" + tag.Title);
             Console.WriteLine("artist：" + tag.Artist);
