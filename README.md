@@ -33,7 +33,7 @@ var tag = TagFactory.Load(@"H:\开发\样本\tag shooter\Traumerei.flac");
 2. `Load()`静态函数的重载函数亦支持`FileInfo`，如：
 ```csharp
 FileInfo fileInfo = new FileInfo(@"H:\开发\样本\tag shooter\Traumerei.flac");
-var tag = TagFactory.Load(@"H:\开发\样本\tag shooter\Traumerei.flac");
+var tag = TagFactory.Load(fileInfo);
 ```
 实际上，他们在`TagFactory`类中本来就是相互调用的关系。
 
