@@ -41,7 +41,7 @@ var tag = TagFactory.Load(@"H:\开发\样本\tag shooter\Traumerei.flac");
 ```csharp
 Console.WriteLine("title：" + tag.Title);
 ```
-除了`Title`属性外，改接口亦支持以下属性：
+除了`Title`属性外，该接口亦支持以下属性：
 
 - Artist 表演者名称
 - Album 专辑名称
