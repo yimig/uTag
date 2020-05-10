@@ -37,7 +37,7 @@ var tag = TagFactory.Load(fileInfo);
 ```
 实际上，他们在`TagFactory`类中本来就是相互调用的关系。
 
-要读取一个标签，比如标题，可以直接读取返接口的`Title`属性，如：
+要读取一个标签，比如标题，可以直接读取接口的`Title`属性，如：
 ```csharp
 Console.WriteLine("title：" + tag.Title);
 ```
